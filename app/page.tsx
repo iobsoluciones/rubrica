@@ -284,6 +284,17 @@ export default async function PaginaInicio() {
                     <span style={s.planConvenir}>A convenir</span>
                   )}
                 </div>
+
+                {/* El precio por empresa es la cifra que de verdad compara
+                    un consultor: lo que le cuesta cada cliente al mes. Se
+                    calcula aquí para que no tenga que hacer la división —
+                    y porque es donde se ve que el plan grande sale mejor. */}
+                {p.precio_mensual > 0 && p.max_empresas ? (
+                  <p style={s.planUnidad}>
+                    ${Math.round(p.precio_mensual / p.max_empresas).toLocaleString('es-CO')}
+                    {' '}por empresa al mes
+                  </p>
+                ) : null}
               </div>
 
               <dl style={s.planLista}>
@@ -563,6 +574,10 @@ const s: Record<string, React.CSSProperties> = {
   planPrecio: { display: 'flex', alignItems: 'baseline', gap: 6 },
   planCifra: { fontSize: 30, fontWeight: 700, letterSpacing: -1 },
   planMes: { fontSize: 13, color: GRAFITO },
+  planUnidad: {
+    fontSize: 12, color: 'var(--texto-tenue)', margin: '6px 0 0',
+    fontVariantNumeric: 'tabular-nums',
+  },
   planConvenir: { fontSize: 20, fontWeight: 600, color: GRAFITO },
   planLista: { margin: '0 0 22px', flex: 1 },
   planFila: {
