@@ -21,6 +21,7 @@
  */
 import Link from 'next/link';
 import { crearClienteServidor } from '@/lib/supabase/servidor';
+import BotonWhatsApp, { ENLACE_WHATSAPP } from './BotonWhatsApp';
 
 type Plan = {
   codigo: string;
@@ -320,7 +321,21 @@ export default async function PaginaInicio() {
                 <Fila k="Membrete propio por empresa" v={p.encabezado_personalizable ? 'Sí' : '—'} />
               </dl>
 
-              <Link href="/registro" style={s.planBoton}>Empezar</Link>
+              {p.precio_mensual > 0 ? (
+                <Link href="/registro" style={s.planBoton}>Empezar</Link>
+              ) : (
+                /* «A convenir» no se puede contratar solo: el botón abre
+                   la conversación en vez de llevar a un alta que dejaría
+                   al cliente en el plan equivocado. */
+                <a
+                  href={ENLACE_WHATSAPP}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={s.planBoton}
+                >
+                  Hablar por WhatsApp
+                </a>
+              )}
             </div>
           ))}
         </div>
@@ -337,6 +352,14 @@ export default async function PaginaInicio() {
             <p style={s.pieTexto}>
               Un producto de IOB Soluciones · Bogotá, Colombia
             </p>
+            <a
+              href={ENLACE_WHATSAPP}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={s.pieWhatsapp}
+            >
+              WhatsApp 310 247 5530
+            </a>
           </div>
           <p style={s.pieLegal}>
             Tratamos datos personales conforme a la Ley 1581 de 2012.<br />
@@ -345,6 +368,8 @@ export default async function PaginaInicio() {
           </p>
         </div>
       </footer>
+
+      <BotonWhatsApp />
     </main>
   );
 }
@@ -597,6 +622,11 @@ const s: Record<string, React.CSSProperties> = {
   pieFila: {
     maxWidth: 1120, margin: '0 auto', padding: '34px 32px',
     display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 28,
+  },
+  pieWhatsapp: {
+    display: 'inline-block', marginTop: 10, fontSize: 12.5, fontWeight: 600,
+    color: '#128C4A', textDecoration: 'none',
+    borderBottom: '1px solid rgba(18,140,74,.35)', paddingBottom: 1,
   },
   pieTexto: { fontSize: 12.5, color: GRAFITO, margin: '10px 0 0' },
   pieLegal: { fontSize: 11.5, color: 'var(--texto-tenue)', margin: 0, lineHeight: 1.7 },
