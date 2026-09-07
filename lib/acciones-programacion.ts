@@ -17,6 +17,7 @@
 import { revalidatePath } from 'next/cache';
 import { crearClienteServidor } from './supabase/servidor';
 import { empresaActiva } from './empresa-activa';
+import { capacidadesDelPlan, mensajePlan } from './plan';
 
 export type EstadoProgramacion =
   | 'pendiente' | 'proxima' | 'vencida' | 'cumplida' | 'cancelada';
@@ -69,6 +70,11 @@ export async function programarInspeccion(datos: {
   periodicidad: string;
   notas: string;
 }): Promise<Resultado> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.programacionInspecciones) {
+    return { ok: false, mensaje: mensajePlan('Programar inspecciones', cap.nombre) };
+  }
+
   const empresa = await empresaActiva();
   if (!empresa) return { ok: false, mensaje: 'No hay empresa seleccionada.' };
 

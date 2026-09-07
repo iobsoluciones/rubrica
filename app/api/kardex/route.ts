@@ -5,11 +5,19 @@
  */
 import { generarKardex } from '@/lib/excel/generarKardex';
 import { empresaActiva } from '@/lib/empresa-activa';
+import { capacidadesDelPlan, mensajePlan } from '@/lib/plan';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  // Los reportes en Excel son del plan Pro. Se comprueba aquí y no
+  // solo en el botón porque una URL se puede escribir a mano.
+  const cap = await capacidadesDelPlan();
+  if (!cap.reportesExcel) {
+    return new Response(mensajePlan('La descarga en Excel', cap.nombre), { status: 403 });
+  }
+
   const empresa = await empresaActiva();
   if (!empresa) return new Response('No hay empresa seleccionada.', { status: 400 });
 

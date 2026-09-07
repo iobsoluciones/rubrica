@@ -18,6 +18,7 @@
 import { revalidatePath } from 'next/cache';
 import { crearClienteServidor } from './supabase/servidor';
 import { empresaActiva } from './empresa-activa';
+import { capacidadesDelPlan, mensajePlan } from './plan';
 
 export type TipoNorma =
   | 'ley' | 'decreto' | 'resolucion' | 'circular' | 'ntc' | 'acuerdo' | 'otro';
@@ -178,6 +179,11 @@ export async function guardarNorma(datos: {
   emisor: string; tema: string; articulos: string; enlace: string;
   transversal: boolean;
 }): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('guardar_norma_catalogo', {
     p_tipo: datos.tipo,
@@ -201,6 +207,11 @@ export async function guardarNorma(datos: {
 }
 
 export async function eliminarNorma(id: string): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('eliminar_norma_catalogo', { p_id: id });
   if (error) return { ok: false, mensaje: error.message };
@@ -214,6 +225,11 @@ export async function eliminarNorma(id: string): Promise<Res> {
 
 /** El navegador lee el Excel; aquí solo llegan las filas ya convertidas. */
 export async function importarNormas(filas: FilaNorma[]): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   if (filas.length === 0) {
     return { ok: false, mensaje: 'El archivo no tiene filas.' };
   }

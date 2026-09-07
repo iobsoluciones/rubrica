@@ -13,9 +13,13 @@ import type { ArticuloKardex } from '@/lib/acciones-kardex';
 export default function BloqueKardex({
   articulos,
   color,
+  excel = true,
 }: {
   articulos: ArticuloKardex[];
   color: string;
+  /** El kardex es un Excel: sin esa capacidad se muestra el aviso del
+   *  plan en vez de un botón que devolvería un 403. */
+  excel?: boolean;
 }) {
   const [articulo, setArticulo] = useState('todos');
   const [desde, setDesde] = useState('');
@@ -102,9 +106,15 @@ export default function BloqueKardex({
           </div>
 
           <div style={e.acciones}>
-            <a href={enlace} style={{ ...e.btn, background: 'var(--marca)' }}>
-              Descargar Excel
-            </a>
+            {excel ? (
+              <a href={enlace} style={{ ...e.btn, background: 'var(--marca)' }}>
+                Descargar Excel
+              </a>
+            ) : (
+              <span style={e.btnPro} title="Disponible desde el plan Pro">
+                Descargar Excel <span style={e.pro}>PRO</span>
+              </span>
+            )}
 
             {(desde || hasta) && (
               <button
@@ -144,6 +154,17 @@ export default function BloqueKardex({
 }
 
 const e: Record<string, React.CSSProperties> = {
+  btnPro: {
+    display: 'inline-flex', alignItems: 'center', gap: 7,
+    background: 'var(--superficie-3)', color: 'var(--texto-tenue)',
+    border: '1px solid var(--borde)', padding: '9px 16px', borderRadius: 6,
+    fontSize: 13, fontWeight: 600, cursor: 'not-allowed',
+  },
+  pro: {
+    fontSize: 9.5, fontWeight: 800, letterSpacing: .8,
+    background: 'var(--marca)', color: 'var(--sobre-empresa)',
+    borderRadius: 3, padding: '2px 5px',
+  },
   card: {
     background: 'var(--superficie)', borderWidth: 1, borderStyle: 'solid', borderColor: 'var(--borde)',
     borderRadius: 8, padding: 20, marginBottom: 18,

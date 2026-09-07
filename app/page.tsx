@@ -27,8 +27,11 @@ type Plan = {
   nombre: string;
   precio_mensual: number;
   max_empresas: number | null;
-  max_usuarios: number | null;
   max_preguntas_evaluacion: number | null;
+  encabezado_personalizable: boolean;
+  reportes_excel: boolean;
+  catalogos_propios: boolean;
+  programacion_inspecciones: boolean;
 };
 
 const TINTA = '#14263F';
@@ -259,7 +262,9 @@ export default async function PaginaInicio() {
         <h2 style={s.h2}>Planes</h2>
         <p style={s.subtitulo}>
           Todos incluyen los módulos completos, los documentos en PDF y las
-          firmas por enlace. Lo que cambia es cuántas empresas administras.
+          firmas por enlace: ningún plan te deja sin poder investigar un
+          accidente. Lo que cambia es cuántas empresas administras y unas
+          comodidades de trabajo.
         </p>
 
         <div style={s.planes}>
@@ -286,19 +291,22 @@ export default async function PaginaInicio() {
                   k="Empresas a cargo"
                   v={p.max_empresas ? String(p.max_empresas) : 'Sin límite'}
                 />
+                {/* Todos los planes traen los módulos completos: un SG-SST
+                    al que le falta la investigación de accidentes deja al
+                    cliente sin cumplir el día que peor viene. Lo que
+                    cambia son comodidades, no obligaciones legales. */}
                 <Fila k="Módulos del SG-SST" v="Todos" />
                 <Fila k="Capacitaciones y documentos" v="Sin límite" />
-                <Fila
-                  k="Usuarios"
-                  v={p.max_usuarios ? String(p.max_usuarios) : 'Sin límite'}
-                />
+                <Fila k="Firma por enlace" v="Sí" />
+                <Fila k="Documentos en PDF" v="Todos" />
                 <Fila
                   k="Preguntas por evaluación"
                   v={p.max_preguntas_evaluacion ? String(p.max_preguntas_evaluacion) : 'Sin límite'}
                 />
-                <Fila k="Membrete propio por empresa" v="Sí" />
-                <Fila k="Firma por enlace" v="Sí" />
-                <Fila k="Reporte ejecutivo" v="Sí" />
+                <Fila k="Reportes en Excel" v={p.reportes_excel ? 'Sí' : '—'} />
+                <Fila k="Plantillas y catálogos propios" v={p.catalogos_propios ? 'Sí' : '—'} />
+                <Fila k="Programación de inspecciones" v={p.programacion_inspecciones ? 'Sí' : '—'} />
+                <Fila k="Membrete propio por empresa" v={p.encabezado_personalizable ? 'Sí' : '—'} />
               </dl>
 
               <Link href="/registro" style={s.planBoton}>Empezar</Link>

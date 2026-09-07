@@ -12,6 +12,7 @@
  */
 import { revalidatePath } from 'next/cache';
 import { crearClienteServidor } from './supabase/servidor';
+import { capacidadesDelPlan, mensajePlan } from './plan';
 
 export type TipoInspeccion = 'planeada' | 'equipo' | 'area' | 'auditoria';
 export type TipoRespuesta = 'cumple' | 'numerico' | 'texto';
@@ -202,6 +203,11 @@ export async function duplicarPlantillaInspeccion(
   id: string,
   nombre?: string
 ): Promise<Resultado> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('duplicar_plantilla_inspeccion', {
     p_plantilla: id,

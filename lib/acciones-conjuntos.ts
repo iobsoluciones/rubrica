@@ -17,6 +17,7 @@
  */
 import { revalidatePath } from 'next/cache';
 import { crearClienteServidor } from './supabase/servidor';
+import { capacidadesDelPlan, mensajePlan } from './plan';
 
 export type Ciclo = 'planear' | 'hacer' | 'verificar' | 'actuar';
 
@@ -78,6 +79,11 @@ export async function obtenerConjunto(id: string): Promise<{
 export async function crearConjunto(
   nombre: string, norma: string, descripcion: string
 ): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('crear_conjunto_estandares', {
     p_nombre: nombre, p_norma: norma || null, p_descripcion: descripcion || null,
@@ -99,6 +105,11 @@ export async function crearConjunto(
 export async function duplicarConjunto(
   id: string, nombre: string, norma = '', descripcion = ''
 ): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('duplicar_conjunto_estandares', {
     p_conjunto: id,
@@ -123,6 +134,11 @@ export async function duplicarConjunto(
 export async function importarConjunto(
   id: string, filas: FilaImportada[]
 ): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   if (!filas || filas.length === 0) {
     return { ok: false, mensaje: 'El archivo no trae filas.' };
   }
@@ -147,6 +163,11 @@ export async function importarConjunto(
 }
 
 export async function eliminarConjunto(id: string): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('eliminar_conjunto_estandares', {
     p_conjunto: id,
@@ -164,6 +185,11 @@ export async function eliminarConjunto(id: string): Promise<Res> {
 export async function actualizarConjunto(
   id: string, nombre: string, norma: string, descripcion: string
 ): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('actualizar_conjunto_estandares', {
     p_conjunto: id, p_nombre: nombre,
@@ -190,6 +216,11 @@ export async function guardarItem(
     capitulo: string; nombre: string; peso: number;
   }
 ): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('guardar_item_conjunto', {
     p_conjunto: conjuntoId,
@@ -211,6 +242,11 @@ export async function guardarItem(
 }
 
 export async function eliminarItem(id: string): Promise<Res> {
+  const cap = await capacidadesDelPlan();
+  if (!cap.catalogosPropios) {
+    return { ok: false, mensaje: mensajePlan('Crear catálogos propios', cap.nombre) };
+  }
+
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.rpc('eliminar_item_conjunto', { p_id: id });
   if (error) return { ok: false, mensaje: error.message };
