@@ -33,8 +33,26 @@ export default function PaginaLogin() {
     });
 
     if (error) {
-      // Mensaje generico: no revelar si el correo existe o no
-      setError('Correo o contraseña incorrectos.');
+      // El mensaje genérico es correcto SOLO para credenciales malas: no
+      // se revela si el correo existe. Pero aplicarlo a cualquier fallo
+      // manda a la persona a cambiar una contraseña que estaba bien.
+      //
+      // Pasó en producción el 24-sep-2026: Supabase pausó el proyecto por
+      // inactividad, `signInWithPassword` devolvió un error de servicio y
+      // la pantalla dijo «contraseña incorrecta». Se perdió un rato
+      // buscando en el sitio equivocado por un mensaje mal elegido.
+      const credenciales =
+        error.code === 'invalid_credentials' ||
+        (!error.code && error.status === 400);
+
+      setError(
+        credenciales
+          ? 'Correo o contraseña incorrectos.'
+          : error.code === 'email_not_confirmed'
+            ? 'Tu correo aún no está confirmado. Revisa el mensaje de confirmación.'
+            : 'No se pudo conectar con el servidor. Vuelve a intentarlo en unos ' +
+              'minutos — no es tu contraseña.'
+      );
       setCargando(false);
       return;
     }
